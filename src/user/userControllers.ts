@@ -6,17 +6,17 @@ import { config } from "../config/config";
 
 const createUser =async (req:Request,res:Response)=>{
         console.log(req.body)
-        const {name,email,password}=req.body;
+        const {firstName,lastName,email,password}=req.body;
 // validation
-    if(!name || !email || !password){
+    if(!firstName || !lastName || !email || !password){
         console.log("fields missing")
         return;
     }
     // database call
-    const user=await userModel.findOne({email:email});
+    const user=await userModel.findOne({email});
     if(user){
         console.log("user already present");
-        return
+        res.status(400).json({error:"user already present"})
     }
 // password hash
 const hashSalt=10;
@@ -26,7 +26,8 @@ const hashPassword=await bcrypt.hash(password,hashSalt);
 // store user data
 
 const newUser=await userModel.create({
-    name,
+    firstName,
+    lastName,
     email,
     password:hashPassword
 })
